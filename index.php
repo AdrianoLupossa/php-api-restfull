@@ -53,6 +53,8 @@ class HTTP {
 		
 		if ($found > 0):
 			http_response_code(200);
+			header("Resource: $table/$resource");
+			header("Options: PUT,DELETE");
 			echo $data; exit;
 		else:
 			http_response_code(404);
