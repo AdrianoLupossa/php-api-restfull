@@ -6,7 +6,7 @@ require("controller/auth.php");
 class HTTP {
 
 	private $resource;
-	private $codigo;
+	private $query;
 	private $table;
 	private $deny = array("login", "empresa");
 	const METHODS = array("GET", "POST", "PUT", "DELETE");
@@ -20,23 +20,25 @@ class HTTP {
 			$url = explode("/", $url);
 			$this->table = $url[0];
 			$this->resource = $url[1];
-			$this->codigo = explode("s", $this->table);
-			$this->codigo = "codigo_".implode("", $this->codigo);
-			// echo print_r($this::METHODS)."<br/>";
+			$this->query = explode("s", $this->table);
+			$this->query = "codigo_".implode("", $this->query);
+			(!($this->resource > 0)) ? $this->query = "nome" : "";
 		else:
-			require('views/error.php'); exit;
+			require("views/error-403.php"); exit;
 		endif;
 	}
 
 	public function GET ($url) {
 		$con = conectar();
+		header("content-type: application/json; charset=UTF-8");
+
 		$this->ValidURL($url);
 		$resource = $this->resource;
 		$table = $this->table;
-		$codigo = $this->codigo;
+		$query = $this->query;
 
 		if ($resource != "all") {
-			$query = $con->prepare("SELECT * FROM `$table` WHERE $codigo = ?");
+			$query = $con->prepare("SELECT * FROM `$table` WHERE $query = ?");
 			$query->bindValue(1, $resource);
 			$query->execute();
 			$fetchData = $query->fetch(PDO::FETCH_OBJ);
@@ -50,8 +52,10 @@ class HTTP {
 		$data = json_encode($fetchData);
 		
 		if ($found > 0):
+			http_response_code(200);
 			echo $data; exit;
 		else:
+			http_response_code(404);
 			echo "Status: ".$this::STATUS["NOT FOUND"]. " Resource not found: $url"; exit;
 		endif;
 	}
@@ -74,11 +78,10 @@ if (isset($_GET["url"])) {
 	$url = $_GET["url"];
 	$dados = new HTTP();
 	$dados->GET($url);
-} else if ($_POST["url"]) {
+} else if ($_POST) {
 	$url = $_GET["url"];
-
 } else {
-	require('views/error.php');
+	require('views/error-403.php');
 }
 // echo __FILE__;
 // $token && $FARMID
