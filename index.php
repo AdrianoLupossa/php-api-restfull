@@ -5,16 +5,32 @@ require("controller/auth.php");
 
 class HTTP {
 
-	private $url;
+	private $resource;
+	private $codigo;
+	private $table;
+	const METHODS = array("GET", "POST", "PUT", "DELETE");
+	const STATUS = array("OK" => 200, "NOT FOUND" => 404);
+
+	private function ValidURL ($url) {
+		if (substr_count($url, "/") > 0):
+			$url = explode("/", $url);
+			$this->table = $url[0];
+			$this->resource = $url[1];
+			$this->codigo = explode("s", $this->table);
+			$this->codigo = "codigo_".implode("", $this->codigo);
+			// echo $this->table."<br>".$this->resource."<br>".$this->codigo."<br>";
+			echo print_r($this::METHODS)."<br/>";
+		else:
+			include('views/error.php'); exit;
+		endif;
+	}
+
 	public function GET ($url) {
 		$con = conectar();
-		$this->$url = $url;
-		$url = explode("/", $url);
-		
-		$table = $url[0];
-		$resource = $url[1];
-		$codigo = explode("s", $table);
-		$codigo = "codigo_".implode("", $codigo);
+		$this->ValidURL($url);
+		$resource = $this->resource;
+		$table = $this->table;
+		$codigo = $this->codigo;
 
 		if ($resource != "all") {
 			$query = $con->prepare("SELECT * FROM `$table` WHERE $codigo = ?");
@@ -33,7 +49,7 @@ class HTTP {
 		if ($found > 0):
 			echo $data;
 		else:
-			echo 404;
+			echo $this::STATUS["NOT FOUND"]; exit;
 		endif;
 	}
 
@@ -51,10 +67,13 @@ class HTTP {
 
 }
 
-$dados = new HTTP();
-echo $_GET["url"];
-
-$dados->GET("produtos/all");
-"<br><br>".print_r(apache_response_headers());
+if (isset($_GET["url"])) {
+	$url = $_GET["url"];
+	$dados = new HTTP();
+	$dados->GET($url);
+} else {
+	include('views/error.php');
+}
+// echo __FILE__;
 // $token && $FARMID
 
