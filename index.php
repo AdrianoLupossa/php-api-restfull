@@ -60,11 +60,42 @@ class HTTP {
 		endif;
 	}
 
-	public function POST ($url, $JSON) {
-		// Ex: "api/produtos", {nome: "paracetamol", qtd: "2"}
+	public function POST ($url, $arrayData) {
+		// Ex: "api/produtos/", {nome: "paracetamol", qtd: "2"}
+		$con = conectar();
+		header("content-type: application/json; charset=UTF-8");
+		
+		// print_r($arrayData);
+		$this->ValidURL($url);
+		$table = $this->table;
+		
+		$keys = array_keys($arrayData);
+		$numberOfKeys = count($keys);
+		$keys = implode(",", $keys);
+		$values = str_repeat("?,", $numberOfKeys);
+		$values = explode(',', $values);
+		array_pop($values);
+		$values = implode(",", $values);
+		
+		$query = $con->prepare("INSERT INTO `$table`($keys) VALUES($values)");
+		$index = 0;
+		foreach ($arrayData as $key => $data) {
+			$query->bindValue(++$index, $data);
+		}
+
+		if ($query->execute()) {
+			http_response_code(201);
+			header("Location: $table/{$arrayData["nome"]}");
+			header("Options: GET,PUT,DELETE");
+			echo 201;
+		} else {
+			http_response_code(500);
+			echo 'Something went wrong, please contact the <a href="mailto:adrianolupossa@gmail.com">Webmaster</a>';
+		}
+
 	}
 
-	public function PUT ($url, $JSON) {
+	public function PUT ($url, $json) {
 		// Ex: "api/produtos/1" && {}
 	}
 
@@ -74,15 +105,16 @@ class HTTP {
 
 }
 
-if (isset($_GET["url"])) {
+if (isset($_GET["url"]) && !($_POST)) {
 	$url = $_GET["url"];
 	$dados = new HTTP();
 	$dados->GET($url);
-} else if ($_POST) {
+} else if ($_POST && isset($_GET["url"])) {
 	$url = $_GET["url"];
+	$dados = new HTTP();
+	$dados->POST($url, $_POST);
 } else {
 	require('views/error-403.php');
 }
 // echo __FILE__;
 // $token && $FARMID
-
