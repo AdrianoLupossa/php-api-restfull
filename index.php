@@ -52,6 +52,8 @@ class HTTP {
 }
 
 $dados = new HTTP();
+echo $_GET["url"];
+
 $dados->GET("produtos/all");
 "<br><br>".print_r(apache_response_headers());
 // $token && $FARMID
