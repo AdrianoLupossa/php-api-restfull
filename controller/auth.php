@@ -1,5 +1,6 @@
 <?php
 session_start();
+define("METHOD", $_SERVER["REQUEST_METHOD"]);
 
 class AUTH {
 	
@@ -46,3 +47,4 @@ class AUTH {
 
 $http = new AUTH();
 $http->Status();
+
