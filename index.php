@@ -8,18 +8,21 @@ class HTTP {
 	private $resource;
 	private $codigo;
 	private $table;
+	private $deny = array("login", "empresa");
 	const METHODS = array("GET", "POST", "PUT", "DELETE");
 	const STATUS = array("OK" => 200, "NOT FOUND" => 404);
 
 	private function ValidURL ($url) {
-		if (substr_count($url, "/") > 0):
+		$deny = $this->deny;
+		$resource = explode("/", $url);
+		$deny = $resource[0] != $deny[0] && $resource[0] != $deny[1];
+		if ((substr_count($url, "/") > 0) && $deny):
 			$url = explode("/", $url);
 			$this->table = $url[0];
 			$this->resource = $url[1];
 			$this->codigo = explode("s", $this->table);
 			$this->codigo = "codigo_".implode("", $this->codigo);
-			// echo $this->table."<br>".$this->resource."<br>".$this->codigo."<br>";
-			echo print_r($this::METHODS)."<br/>";
+			// echo print_r($this::METHODS)."<br/>";
 		else:
 			require('views/error.php'); exit;
 		endif;
@@ -49,7 +52,7 @@ class HTTP {
 		if ($found > 0):
 			echo $data; exit;
 		else:
-			echo $this::STATUS["NOT FOUND"]; exit;
+			echo "Status: ".$this::STATUS["NOT FOUND"]. " Resource not found: $url"; exit;
 		endif;
 	}
 
