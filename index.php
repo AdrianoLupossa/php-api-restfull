@@ -21,7 +21,7 @@ class HTTP {
 			// echo $this->table."<br>".$this->resource."<br>".$this->codigo."<br>";
 			echo print_r($this::METHODS)."<br/>";
 		else:
-			include('views/error.php'); exit;
+			require('views/error.php'); exit;
 		endif;
 	}
 
@@ -47,7 +47,7 @@ class HTTP {
 		$data = json_encode($fetchData);
 		
 		if ($found > 0):
-			echo $data;
+			echo $data; exit;
 		else:
 			echo $this::STATUS["NOT FOUND"]; exit;
 		endif;
@@ -71,8 +71,11 @@ if (isset($_GET["url"])) {
 	$url = $_GET["url"];
 	$dados = new HTTP();
 	$dados->GET($url);
+} else if ($_POST["url"]) {
+	$url = $_GET["url"];
+
 } else {
-	include('views/error.php');
+	require('views/error.php');
 }
 // echo __FILE__;
 // $token && $FARMID
