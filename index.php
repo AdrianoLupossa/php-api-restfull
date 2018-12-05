@@ -11,6 +11,10 @@ class HTTP {
 	const METHODS = array("GET", "POST", "PUT", "DELETE");
 	const STATUS = array("OK" => 200, "NOT FOUND" => 404);
 
+	private function Headers () {
+		header("Content-Type: application/json; charset=UTF-8");
+	}
+
 	private function ValidURL ($url) {
 		$deny = $this->deny;
 		$resource = explode("/", $url);
@@ -27,9 +31,12 @@ class HTTP {
 		endif;
 	}
 
+
 	public function GET ($url) {
+		// Ex: "api/produtos/1"
+
 		$con = conectar();
-		header("Content-Type: application/json; charset=UTF-8");
+		$this->headers();
 
 		$this->ValidURL($url);
 		$resource = $this->resource;
@@ -61,12 +68,13 @@ class HTTP {
 		endif;
 	}
 
+
 	public function POST ($url, $arrayData) {
 		// Ex: "api/produtos/", {nome: "paracetamol", qtd: "2"}
+
 		$con = conectar();
-		header("Content-Type: application/json; charset=UTF-8");
+		$this->Headers();
 		
-		// print_r($arrayData);
 		$this->ValidURL($url);
 		$table = $this->table;
 		
@@ -88,7 +96,6 @@ class HTTP {
 			http_response_code(201);
 			header("Location: $table/{$arrayData["nome"]}");
 			header("Options: GET,PUT,DELETE");
-			echo 201;
 		} else {
 			http_response_code(500);
 			echo 'Something went wrong, please contact the <a href="mailto:adrianolupossa@gmail.com">Webmaster</a>';
@@ -96,16 +103,53 @@ class HTTP {
 
 	}
 
-	public function PUT ($url, $json) {
-		// Ex: "api/produtos/1" && {}
+	public function PUT ($url, $arrayData) {
+		// Ex: "api/produtos/1", {nome: "paracetamol", qtd: "2"}
+
+		$con = conectar();
+		$this->Headers();
+		$this->ValidURL($url);
+
+		// header("content-disposition: application/json");
+		
+		$resource = $this->resource;
+		$table = $this->table;
+		$query = $this->query;
+		if (!empty($resource)):
+			$keys = array_keys($arrayData);
+			$numberOfKeys = count($keys);
+			$keys = implode(",", $keys);
+			$keys = str_replace(",", " = ?, ", $keys);
+			$fields = $keys." = ?";
+			
+			$query = $con->prepare("UPDATE `$table` SET $fields WHERE $query = ?");
+			$index = 0;
+			foreach ($arrayData as $key => $data) $query->bindValue(++$index, $data);
+			$query->bindValue(++$index, $resource);
+			$query->execute();
+			$found = $query->rowCount();
+			if ($found > 0) {
+				http_response_code(204);
+				header("Location: $table/$resource");
+				header("Options: GET,DELETE");
+			} else {
+				http_response_code(304);
+			}
+			
+		else:
+			http_response_code(404);
+			echo "Status: ".$this::STATUS["NOT FOUND"]. " Resource not found: $url"; exit;
+			exit;
+		endif;
+		
 	}
 
 	public function DELETE ($url) {
 		// Ex: api/produtos/1
+
 		$con = conectar();
-		header("Content-Type: application/json; charset=UTF-8");
+		$this->Headers();
 		
-		// print_r($arrayData);
 		$this->ValidURL($url);
 		$resource = $this->resource;
 		$table = $this->table;
@@ -120,10 +164,11 @@ class HTTP {
 			
 		if ($query->execute()) {
 			http_response_code(200);
-			// header("Location: $table/{$arrayData["nome"]}");
-			echo "Resource: '$table/$resource' DELETED!";
+			$message = array("Resource" => "$table/$resource", "Status" => "DELETED");
+			echo json_encode($message);
 		} else {
-			http_response_code(500);
+			http_response_code(304);
+			header("Location: $url");
 			echo 'Something went wrong, please contact the <a href="mailto:adrianolupossa@gmail.com">Webmaster</a>';
 		}
 
@@ -147,26 +192,27 @@ if (isset($_GET["url"]) && METHOD === "GET") {
 			$data_array[$key] = $value;
 		}
 		$dados->POST($url, $data_array);
-		
+
 	else:
 		$dados->POST($url, $_POST);
-		
+
 	endif;
 
 } else if(isset($_GET["url"]) && METHOD === "PUT") {
-	http_response_code(200);
-	header("content-disposition: application/json");
-	// echo METHOD;
+	$url = $_GET["url"];
+	$dados = new HTTP();
+
 	parse_str(file_get_contents('php://input'), $_PUT);
-	// $dados = implode(" ", $_PUT);
-	// $dados = explode("----", $dados);
-	// array_pop($dados);
-	// $dados = str_replace('"dados"', "", $dados[0]);
-	// $dados = json_decode($dados);
-	// print_r($dados);
-	print_r($_PUT);
-	
-	// print_r($_SERVER["REQUEST_URI"]);
+	$data = implode(" ", $_PUT);
+	$data = explode("----", $data);
+	array_pop($data);
+	$data = str_replace('"data"', "", $data[0]);
+	$data = json_decode($data);
+	$data_array = array();
+	foreach ($data as $key => $value) {
+		$data_array[$key] = $value;
+	}
+	$dados->PUT($url, $data_array);
 
 } else if (isset($_GET["url"]) && METHOD === "DELETE") {
 	$url = $_GET["url"];
@@ -176,4 +222,3 @@ if (isset($_GET["url"]) && METHOD === "GET") {
 } else {
 	require('views/error-403.php');
 }
-// echo __FILE__;
