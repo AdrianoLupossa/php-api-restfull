@@ -139,17 +139,33 @@ if (isset($_GET["url"]) && METHOD === "GET") {
 } else if (isset($_GET["url"]) && $_POST) {
 	$url = $_GET["url"];
 	$dados = new HTTP();
-	$dados->POST($url, $_POST);
+
+	if (isset($_POST["data"])):
+		$data = json_decode($_POST["data"]);
+		$data_array = array();
+		foreach ($data as $key => $value) {
+			$data_array[$key] = $value;
+		}
+		$dados->POST($url, $data_array);
+		
+	else:
+		$dados->POST($url, $_POST);
+		
+	endif;
 
 } else if(isset($_GET["url"]) && METHOD === "PUT") {
 	http_response_code(200);
-	echo METHOD;
-	$_SERVER["REQUEST_METHOD"] = "POST";
-	print_r($_SERVER);
-	// print_r($_GET);
-	print_r($_POST);
-	// print_r($_PUT);
-
+	header("content-disposition: application/json");
+	// echo METHOD;
+	parse_str(file_get_contents('php://input'), $_PUT);
+	// $dados = implode(" ", $_PUT);
+	// $dados = explode("----", $dados);
+	// array_pop($dados);
+	// $dados = str_replace('"dados"', "", $dados[0]);
+	// $dados = json_decode($dados);
+	// print_r($dados);
+	print_r($_PUT);
+	
 	// print_r($_SERVER["REQUEST_URI"]);
 
 } else if (isset($_GET["url"]) && METHOD === "DELETE") {
