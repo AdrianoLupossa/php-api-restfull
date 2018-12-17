@@ -39,7 +39,7 @@ class AUTH {
 		$authUser = $this->authUser();
 		$authFarm = $this->authFarm();
 		if (!($authUser > 0 && $authFarm > 0)) {
-			require("views/error-403.php"); exit;
+			require("views/error-511.php"); exit;
 		}
 
 	}

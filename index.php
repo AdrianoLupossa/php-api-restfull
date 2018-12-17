@@ -97,7 +97,7 @@ class HTTP {
 			header("Location: $table/{$arrayData["nome"]}");
 			header("Options: GET,PUT,DELETE");
 		} else {
-			http_response_code(500);
+			http_response_code(400);
 			echo 'Something went wrong, please contact the <a href="mailto:adrianolupossa@gmail.com">Webmaster</a>';
 		}
 
@@ -163,7 +163,7 @@ class HTTP {
 		}
 			
 		if ($query->execute()) {
-			http_response_code(200);
+			http_response_code(204);
 			$message = array("Resource" => "$table/$resource", "Status" => "DELETED");
 			echo json_encode($message);
 		} else {
