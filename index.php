@@ -25,6 +25,7 @@ class HTTP {
 			$this->resource = $url[1];
 			$this->query = explode("s", $this->table);
 			$this->query = "codigo_".implode("", $this->query);
+			($this->query == "codigo_fornecedore") ? $this->query = "codigo_fornecedor" : "";
 			(!($this->resource > 0)) ? $this->query = "nome" : "";
 		else:
 			require("views/error-403.php"); exit;
