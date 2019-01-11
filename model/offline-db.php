@@ -8,6 +8,8 @@ $query_login = $con->query("create table `login`(codigo_login int(255) not null 
 
 $query_funcionarios = $con->query("create table `funcionarios`(codigo_funcionario int not null primary key auto_increment, nome varchar(60), telefone varchar(20), morada varchar(100), bi varchar(40) unique, data_nascimento varchar(60), data_registo varchar(60), responsavel varchar(100), editado tinyint)");
 
+$query_fornecedores = $con->query("create table `fornecedores`(codigo_fornecedor int not null primary key auto_increment, nome varchar(60), empresa varchar(100), morada varchar(100), telefone varchar(40), nif varchar(30), email varchar(60), data_registo varchar(60), responsavel varchar(100), editado tyint)");
+
 $query_vendas = $con->query("create table `vendas`(codigo_venda int not null primary key auto_increment, codigo_produto int, quantidade int, total int, codigo_factura varchar(6), responsavel varchar(40), data_venda varchar(60), editado tinyint)");
 
 $query_backups = $con->query("create table `backups`(codigo_backup int not null primary key auto_increment, tipo varchar(60), data_backup varchar(40), funcionario varchar(100), editado tinyint)");
