@@ -128,10 +128,11 @@ class HTTP {
 			foreach ($arrayData as $key => $data) $query->bindValue(++$index, $data);
 			$query->bindValue(++$index, $resource);
 			$query->execute();
-			$found = $query->rowCount();
+			$found = count($query);
+			
 			if ($found > 0) {
 				http_response_code(204);
-				header("Location: $table/$resource");
+				header("Resource: $table/$resource");
 				header("Options: GET,DELETE");
 			} else {
 				http_response_code(304);
