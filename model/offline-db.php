@@ -1,6 +1,5 @@
 <?php
 
-
 $query_stock = $con->query("create table `produtos`(codigo_produto int(255) not null primary key auto_increment, nome varchar(40) unique, tipo_produto varchar(60), preco_compra varchar(6), preco_venda varchar(6), responsavel varchar(100), qtdUnit int(6), qtdBlade int(6), quantidade_entrada varchar(6), dataVencimento varchar(60), data_entrada varchar(60), editado tinyint)");
 
 $query_empresa = $con->query("create table `empresa`(codigo_empresa int(255) not null primary key auto_increment, token varchar(100), FarmID varchar(60), nome varchar(40), telefone varchar(20), telefone2 varchar(20), email varchar(60), website varchar(100), endereco varchar(80), fornecedor varchar(4), clientes varchar(4), funcionarios varchar(4), data_registo varchar(100), editado tinyint, sincronizado tinyint)");
@@ -8,6 +7,8 @@ $query_empresa = $con->query("create table `empresa`(codigo_empresa int(255) not
 $query_login = $con->query("create table `login`(codigo_login int(255) not null primary key auto_increment, nome varchar(80) unique, senha varchar(200), nivel_acesso varchar(80), data_registo varchar(100), codigo_funcionario int(255) default '0', editado tinyint)");
 
 $query_funcionarios = $con->query("create table `funcionarios`(codigo_funcionario int not null primary key auto_increment, nome varchar(60), telefone varchar(20), morada varchar(100), bi varchar(40) unique, data_nascimento varchar(60), data_registo varchar(60), responsavel varchar(100), editado tinyint)");
+
+$query_fornecedores = $con->query("create table `fornecedores`(codigo_fornecedor int not null primary key auto_increment, nome varchar(60), empresa varchar(100), morada varchar(100), telefone varchar(40), nif varchar(30), email varchar(60), data_registo varchar(60), responsavel varchar(100), editado tinyint)");
 
 $query_vendas = $con->query("create table `vendas`(codigo_venda int not null primary key auto_increment, codigo_produto int, quantidade int, total int, codigo_factura varchar(6), responsavel varchar(40), data_venda varchar(60), editado tinyint)");
 
