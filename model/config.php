@@ -11,7 +11,7 @@ function conectar () {
 		include("offline-db.php");
 		$error = $con->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		if ($error) {
-			http_response_code(500);
+			// http_response_code(500);
 		}
 
 	} catch (PDOException $e) {
