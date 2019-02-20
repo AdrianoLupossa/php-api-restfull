@@ -1,7 +1,7 @@
 <?php 
 	$host = "localhost";
 	$user = "root";
-	$dbname = "eadfarm";
+	$dbname = "farmap";
 	$pass = "";
 	backup_tables("$host","$user","$pass","$dbname",$tables = '*');
 	function backup_tables($host,$user,$pass,$name,$tables = '*')
