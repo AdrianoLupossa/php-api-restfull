@@ -2,7 +2,7 @@
 
 function conectar () {	
 	@define("SERVER", "localhost");
-	@define("DB", "eadfarm");
+	@define("DB", "farmap");
 	@define("USER", "root");
 	@define("PASS", "");
 
