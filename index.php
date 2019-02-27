@@ -147,38 +147,70 @@ class HTTP {
 		$this->Headers();
 		$this->ValidURL($url);
 
-		// header("content-disposition: application/json");
-		
 		$resource = $this->resource;
 		$table = $this->table;
 		$query = $this->query;
-		if (!empty($resource)):
-			$keys = array_keys($arrayData);
-			$numberOfKeys = count($keys);
-			$keys = implode(",", $keys);
-			$keys = str_replace(",", " = ?, ", $keys);
-			$fields = $keys." = ?";
-			
-			$query = $con->prepare("UPDATE `$table` SET $fields WHERE $query = ?");
-			$index = 0;
-			foreach ($arrayData as $key => $data) $query->bindValue(++$index, $data);
-			$query->bindValue(++$index, $resource);
-			$query->execute();
-			$found = count($query);
-			
-			if ($found > 0) {
-				http_response_code(204);
-				header("Resource: $table/$resource");
-				header("Options: GET,DELETE");
-			} else {
-				http_response_code(304);
+		if (is_object($arrayData[0])) {
+			foreach ($arrayData as $data) {
+				foreach ($data as $objKey => $objData) {
+					$objArray[$objKey] = $objData;
+				}
+				if ($table === "produtos") $query = "codigo_produto";
+				$codigo = $objArray[$query];
+				array_shift($objArray);
+				$keys = array_keys($objArray);
+				$numberOfKeys = count($keys);
+				$keys = implode(",", $keys);
+				$keys = str_replace(",", " = ?, ", $keys);
+				$fields = $keys." = ?";
+				$query = $con->prepare("UPDATE `$table` SET $fields WHERE $query = ?");
+				$index = 0;
+				foreach ($objArray as $key => $data2) $query->bindValue(++$index, $data2);
+				$query->bindValue(++$index, $codigo);
+				$query->execute();
+				$found = count($query);
+				if ($found > 0) {
+					http_response_code(204);
+					header("Resource: $table/$resource");
+					header("Options: GET,DELETE");
+				} else {
+					http_response_code(304);
+				}
 			}
-			
-		else:
-			http_response_code(404);
-			echo "Status: ".$this::STATUS["NOT FOUND"]. " Resource not found: $url"; exit;
-			exit;
-		endif;
+		} 
+
+		else {
+
+			if (!empty($resource)):
+				$keys = array_keys($arrayData);
+				$numberOfKeys = count($keys);
+				$keys = implode(",", $keys);
+				$keys = str_replace(",", " = ?, ", $keys);
+				$fields = $keys." = ?";
+				
+				$query = $con->prepare("UPDATE `$table` SET $fields WHERE $query = ?");
+				$index = 0;
+				foreach ($arrayData as $key => $data) $query->bindValue(++$index, $data);
+				$query->bindValue(++$index, $resource);
+				$query->execute();
+				$found = count($query);
+				
+				if ($found > 0) {
+					http_response_code(204);
+					header("Resource: $table/$resource");
+					header("Options: GET,DELETE");
+				} else {
+					http_response_code(304);
+				}
+				
+			else:
+				http_response_code(404);
+				echo "Status: ".$this::STATUS["NOT FOUND"]. " Resource not found: $url"; exit;
+				exit;
+			endif;
+
+		}
+		
 		
 	}
 
@@ -213,7 +245,7 @@ class HTTP {
 	}
 
 }
-	
+
 if (isset($_GET["url"]) && METHOD === "GET") {
 	$url = $_GET["url"];
 	$dados = new HTTP();
