@@ -78,28 +78,64 @@ class HTTP {
 		
 		$this->ValidURL($url);
 		$table = $this->table;
+		$objArray = [];
 		
-		$keys = array_keys($arrayData);
-		$numberOfKeys = count($keys);
-		$keys = implode(",", $keys);
-		$values = str_repeat("?,", $numberOfKeys);
-		$values = explode(',', $values);
-		array_pop($values);
-		$values = implode(",", $values);
-		
-		$query = $con->prepare("INSERT INTO `$table`($keys) VALUES($values)");
-		$index = 0;
-		foreach ($arrayData as $key => $data) {
-			$query->bindValue(++$index, $data);
-		}
+		if (is_object($arrayData[0])) {
 
-		if ($query->execute()) {
-			http_response_code(201);
-			header("Location: $table/{$arrayData["nome"]}");
-			header("Options: GET,PUT,DELETE");
-		} else {
-			http_response_code(400);
-			echo 'Something went wrong, please contact the <a href="mailto:adrianolupossa@gmail.com">Webmaster</a>';
+			foreach ($arrayData as $data) {
+				foreach ($data as $objKey => $objData) {
+					$objArray[$objKey] = $objData;
+				}
+				$keys = array_keys($objArray);
+				$numberOfKeys = count($keys);
+				$keys = implode(",", $keys);
+				$values = str_repeat("?,", $numberOfKeys);
+				$values = explode(',', $values);
+				array_pop($values);
+				$values = implode(",", $values);
+				$query = $con->prepare("INSERT INTO `$table`($keys) VALUES($values)");
+				$index = 0;
+				foreach ($objArray as $key => $data2) {
+					$query->bindValue(++$index, $data2);
+				}
+
+				if ($query->execute()) {
+					http_response_code(201);
+					header("Location: $table/{$arrayData["nome"]}");
+					header("Options: GET,PUT,DELETE");
+				} else {
+					http_response_code(400);
+					echo 'Something went wrong, please contact the <a href="mailto:adrianolupossa@gmail.com">Webmaster</a>';
+				}
+			}
+
+		} 
+
+		else {
+
+			$keys = array_keys($arrayData);
+			$numberOfKeys = count($keys);
+			$keys = implode(",", $keys);
+			$values = str_repeat("?,", $numberOfKeys);
+			$values = explode(',', $values);
+			array_pop($values);
+			$values = implode(",", $values);
+			
+			$query = $con->prepare("INSERT INTO `$table`($keys) VALUES($values)");
+			$index = 0;
+			foreach ($arrayData as $key => $data) {
+				$query->bindValue(++$index, $data);
+			}
+
+			if ($query->execute()) {
+				http_response_code(201);
+				header("Location: $table/{$arrayData["nome"]}");
+				header("Options: GET,PUT,DELETE");
+			} else {
+				http_response_code(400);
+				echo 'Something went wrong, please contact the <a href="mailto:adrianolupossa@gmail.com">Webmaster</a>';
+			}
+
 		}
 
 	}
