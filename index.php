@@ -7,7 +7,7 @@ class HTTP {
 	private $resource;
 	private $query;
 	private $table;
-	private $deny = array("login", "empresa");
+	private $deny = array("login");
 	const METHODS = array("GET", "POST", "PUT", "DELETE");
 	const STATUS = array("OK" => 200, "NOT FOUND" => 404);
 
@@ -18,7 +18,9 @@ class HTTP {
 	private function ValidURL ($url) {
 		$deny = $this->deny;
 		$resource = explode("/", $url);
-		$deny = $resource[0] != $deny[0] && $resource[0] != $deny[1];
+		foreach ($this->deny as $key => $value) {
+			$deny = $resource[0] != $value;
+		}
 		if ((substr_count($url, "/") > 0) && $deny):
 			$url = explode("/", $url);
 			$this->table = $url[0];
@@ -57,6 +59,16 @@ class HTTP {
 
 		$found = $query->rowCount();
 		$data = json_encode($fetchData);
+		if ($table === "empresa") {
+			foreach ($fetchData as $obj) {
+				$obj->nome = base64_decode($obj->nome);
+				$obj->telefone = base64_decode($obj->telefone);
+				$obj->endereco = base64_decode($obj->endereco);
+			}
+			
+			$data = json_encode($obj);
+		}
+		
 		
 		if ($found > 0):
 			http_response_code(200);
