@@ -205,6 +205,11 @@ class HTTP {
 		else {
 
 			if (!empty($resource)):
+				if($table === "empresa") {
+					$arrayData["nome"] = base64_encode($arrayData["nome"]);
+					$arrayData["telefone"] = base64_encode($arrayData["telefone"]);
+					$arrayData["endereco"] = base64_encode($arrayData["endereco"]);
+				}
 				$keys = array_keys($arrayData);
 				$numberOfKeys = count($keys);
 				$keys = implode(",", $keys);
