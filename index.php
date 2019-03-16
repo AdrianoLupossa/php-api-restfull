@@ -25,8 +25,12 @@ class HTTP {
 			$url = explode("/", $url);
 			$this->table = $url[0];
 			$this->resource = $url[1];
-			$this->query = explode("s", $this->table);
-			$this->query = "codigo_".implode("", $this->query);
+			if (!$this->table === "empresa") {
+				$this->query = explode("s", $this->table);
+				$this->query = "codigo_".implode("", $this->query);
+			} else {
+				$this->query = "codigo_$this->table";
+			}
 			($this->query == "codigo_fornecedore") ? $this->query = "codigo_fornecedor" : "";
 			(!($this->resource > 0)) ? $this->query = "nome" : "";
 		else:
@@ -65,7 +69,7 @@ class HTTP {
 				$obj->telefone = base64_decode($obj->telefone);
 				$obj->endereco = base64_decode($obj->endereco);
 			}
-			
+
 			$data = json_encode($obj);
 		}
 		
@@ -167,6 +171,13 @@ class HTTP {
 				foreach ($data as $objKey => $objData) {
 					$objArray[$objKey] = $objData;
 				}
+
+				if($table === "empresa") {
+					$objArray["nome"] = base64_encode($objArray["nome"]);
+					$objArray["telefone"] = base64_encode($objArray["telefone"]);
+					$objArray["endereco"] = base64_encode($objArray["endereco"]);
+				}
+
 				if ($table === "produtos") $query = "codigo_produto";
 				$codigo = $objArray[$query];
 				array_shift($objArray);
