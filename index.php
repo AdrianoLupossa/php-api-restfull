@@ -166,7 +166,7 @@ class HTTP {
 		$resource = $this->resource;
 		$table = $this->table;
 		$query = $this->query;
-		if (is_object($arrayData[0])) {
+		if (@is_object($arrayData[0])) {
 			foreach ($arrayData as $data) {
 				foreach ($data as $objKey => $objData) {
 					$objArray[$objKey] = $objData;
@@ -210,6 +210,8 @@ class HTTP {
 					$arrayData["telefone"] = base64_encode($arrayData["telefone"]);
 					$arrayData["endereco"] = base64_encode($arrayData["endereco"]);
 				}
+
+				if ($table === "produtos") $query = "codigo_produto";
 				$keys = array_keys($arrayData);
 				$numberOfKeys = count($keys);
 				$keys = implode(",", $keys);
@@ -253,6 +255,7 @@ class HTTP {
 		$table = $this->table;
 		$query = $this->query;
 		
+		if ($table === "produtos") $query = "codigo_produto";
 		if ($resource != "all") {
 			$query = $con->prepare("DELETE FROM `$table` WHERE $query = ?");
 			$query->bindValue(1, $resource);
