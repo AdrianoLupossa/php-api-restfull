@@ -7,7 +7,7 @@ class HTTP {
 	private $resource;
 	private $query;
 	private $table;
-	private $deny = array("login");
+	private $deny = array("nothing");
 	const METHODS = array("GET", "POST", "PUT", "DELETE");
 	const STATUS = array("OK" => 200, "NOT FOUND" => 404);
 
@@ -91,12 +91,11 @@ class HTTP {
 
 		$con = conectar();
 		$this->Headers();
-		
 		$this->ValidURL($url);
+
 		$table = $this->table;
 		$objArray = [];
-		
-		if (is_object($arrayData[0])) {
+		if (@is_object($arrayData[0])) {
 
 			foreach ($arrayData as $data) {
 				foreach ($data as $objKey => $objData) {
@@ -140,9 +139,17 @@ class HTTP {
 			$query = $con->prepare("INSERT INTO `$table`($keys) VALUES($values)");
 			$index = 0;
 			foreach ($arrayData as $key => $data) {
+				if ($table === "login") {
+					
+					print_r("Index: $index"."/ data: $data\n");
+					if ($index === 2) $data = base64_encode(strtolower($data));
+					if ($index === 3) $data = base64_encode($data);
+					if ($index === 4) $data = md5(strtolower($data));
+				}
+
 				$query->bindValue(++$index, $data);
 			}
-
+			
 			if ($query->execute()) {
 				http_response_code(201);
 				header("Location: $table/{$arrayData["nome"]}");
