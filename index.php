@@ -195,6 +195,11 @@ class HTTP {
 					$objArray["endereco"] = base64_encode($objArray["endereco"]);
 				}
 
+				if ($table === "login") {
+					$objArray["nome"] = base64_encode($objArray["nome"]);
+					$objArray["nivel_acesso"] = base64_encode($objArray);
+				}
+
 				if ($table === "produtos") $query = "codigo_produto";
 				$codigo = $objArray[$query];
 				array_shift($objArray);
@@ -226,6 +231,11 @@ class HTTP {
 					$arrayData["nome"] = base64_encode($arrayData["nome"]);
 					$arrayData["telefone"] = base64_encode($arrayData["telefone"]);
 					$arrayData["endereco"] = base64_encode($arrayData["endereco"]);
+				}
+
+				if ($table === "login") {
+					$arrayData["nome"] = base64_encode($arrayData["nome"]);
+					$arrayData["nivel_acesso"] = base64_encode($arrayData["nivel_acesso"]);
 				}
 
 				if ($table === "produtos") $query = "codigo_produto";
