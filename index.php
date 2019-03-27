@@ -71,6 +71,16 @@ class HTTP {
 			}
 
 			$data = json_encode($obj);
+		} 
+
+		else if ($table === "login") {
+			$objArray = array();
+			foreach ($fetchData as $obj) {
+				$obj->nome = base64_decode($obj->nome);
+				$obj->nivel_acesso = base64_decode($obj->nivel_acesso);	
+				array_push($objArray, $obj);
+			}
+			$data = json_encode($objArray);
 		}
 		
 		
