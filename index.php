@@ -198,7 +198,9 @@ class HTTP {
 				if ($table === "login") {
 					$objArray["nome"] = base64_encode($objArray["nome"]);
 					$objArray["nivel_acesso"] = base64_encode($objArray);
+					if (strlen($objArray["senha"]) < 32) $objArray["senha"] = md5(strtolower($objArray['senha']));
 				}
+				
 
 				if ($table === "produtos") $query = "codigo_produto";
 				$codigo = $objArray[$query];
@@ -236,6 +238,7 @@ class HTTP {
 				if ($table === "login") {
 					$arrayData["nome"] = base64_encode($arrayData["nome"]);
 					$arrayData["nivel_acesso"] = base64_encode($arrayData["nivel_acesso"]);
+					if (strlen($arrayData["senha"]) < 32) $arrayData["senha"] = md5(strtolower($arrayData['senha']));
 				}
 
 				if ($table === "produtos") $query = "codigo_produto";
