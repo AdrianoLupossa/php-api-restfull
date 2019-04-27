@@ -39,7 +39,7 @@ class AUTH {
 		$authUser = $this->authUser();
 		$authFarm = $this->authFarm();
 		if (!($authUser > 0 && $authFarm > 0)) {
-			require("../api/views/error-511.php"); 
+			//require("../api/views/error-511.php"); 
 			header("location: ../views/login.html?error=1&type=login_authenticate");
 			exit;
 		}
